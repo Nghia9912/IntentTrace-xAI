@@ -1,0 +1,6 @@
+sentence-transformers>=2.5.1
+transformers>=4.38.2
+captum>=0.7.0
+torch>=2.6.0
+pytest>=8.0.2
+numpy>=2.1.0

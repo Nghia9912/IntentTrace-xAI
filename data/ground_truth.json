@@ -1,0 +1,122 @@
+[
+  {
+    "id": "triplet_001",
+    "prompt": "Write a function to calculate the factorial of a positive integer n.",
+    "c_true": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)",
+    "c_false": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n    print('Unreachable') # Unreachable code hallucination"
+  },
+  {
+    "id": "triplet_002",
+    "prompt": "Function to find the maximum value in a list.",
+    "c_true": "def find_max(arr):\n    if not arr: return None\n    m = arr[0]\n    for x in arr:\n        if x > m:\n            m = x\n    return m",
+    "c_false": "def find_max(arr):\n    if not arr: return None\n    m = arr[0]\n    for x in arr:\n        if x < m:\n            m = x # Logic mutation: Finds min instead of max\n    return m"
+  },
+  {
+    "id": "triplet_003",
+    "prompt": "Check if a number is prime.",
+    "c_true": "def is_prime(n):\n    if n <= 1: return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0: return False\n    return True",
+    "c_false": "def is_prime(n):\n    if n <= 1: return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i != 0: return False # Operator mutation: !=\n    return True"
+  },
+  {
+    "id": "triplet_004",
+    "prompt": "Calculate the sum of all even numbers in an array.",
+    "c_true": "def sum_even(lst):\n    return sum(x for x in lst if x % 2 == 0)",
+    "c_false": "def sum_even(lst):\n    return sum(x for x in lst if x % 2 == 0)\n    return 0 # Unreachable code"
+  },
+  {
+    "id": "triplet_005",
+    "prompt": "Reverse a given string.",
+    "c_true": "def reverse_string(s):\n    return s[::-1]",
+    "c_false": "def reverse_string(s):\n    res = ''\n    for char in s:\n        res = char + res\n        return res # Mutation: Returns immediately on first iteration"
+  },
+  {
+    "id": "triplet_006",
+    "prompt": "Check if a string is a palindrome.",
+    "c_true": "def is_palindrome(s):\n    s = s.lower().replace(' ', '')\n    return s == s[::-1]",
+    "c_false": "def is_palindrome(s):\n    s = s.lower().replace(' ', '')\n    return s != s[::-1] # Logic mutation: !="
+  },
+  {
+    "id": "triplet_007",
+    "prompt": "Count the number of vowels in a string.",
+    "c_true": "def count_vowels(s):\n    vowels = 'aeiouAEIOU'\n    return sum(1 for char in s if char in vowels)",
+    "c_false": "def count_vowels(s):\n    vowels = 'aeiouAEIOU'\n    count = 0\n    for char in s:\n        if char in vowels:\n            count += 1\n    return count\n    count += 1 # Unreachable"
+  },
+  {
+    "id": "triplet_008",
+    "prompt": "Binary Search algorithm implementation.",
+    "c_true": "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: low = mid + 1\n        else: high = mid - 1\n    return -1",
+    "c_false": "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] > target: low = mid + 1 # Logic mutation: wrong search direction\n        else: high = mid - 1\n    return -1"
+  },
+  {
+    "id": "triplet_009",
+    "prompt": "Find the Greatest Common Divisor (GCD).",
+    "c_true": "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a",
+    "c_false": "def gcd(a, b):\n    while b:\n        a, b = a % b, b # Variable assignment logic mutation\n    return a"
+  },
+  {
+    "id": "triplet_010",
+    "prompt": "Find the Least Common Multiple (LCM).",
+    "c_true": "def lcm(a, b):\n    import math\n    return abs(a*b) // math.gcd(a, b)",
+    "c_false": "def lcm(a, b):\n    import math\n    return abs(a*b) // math.gcd(a, b)\n    print(a) # Unreachable code"
+  },
+  {
+    "id": "triplet_011",
+    "prompt": "Check if two strings are anagrams of each other.",
+    "c_true": "def is_anagram(s1, s2):\n    return sorted(s1) == sorted(s2)",
+    "c_false": "def is_anagram(s1, s2):\n    if len(s1) != len(s2): return False\n    return sorted(s1) != sorted(s2) # Operator mutation: !="
+  },
+  {
+    "id": "triplet_012",
+    "prompt": "Flatten a list of sublists.",
+    "c_true": "def flatten(lst):\n    return [item for sublist in lst for item in sublist]",
+    "c_false": "def flatten(lst):\n    res = []\n    for sublist in lst:\n        res.append(sublist) # Logic mutation: Appends sublist without flattening\n    return res"
+  },
+  {
+    "id": "triplet_013",
+    "prompt": "Remove duplicates from an array while preserving order.",
+    "c_true": "def remove_duplicates(lst):\n    seen = set()\n    res = []\n    for x in lst:\n        if x not in seen:\n            seen.add(x)\n            res.append(x)\n    return res",
+    "c_false": "def remove_duplicates(lst):\n    seen = set()\n    res = []\n    for x in lst:\n        if x in seen:\n            seen.add(x) # Logic mutation: Adds only if already seen\n            res.append(x)\n    return res"
+  },
+  {
+    "id": "triplet_014",
+    "prompt": "Merge two dictionaries, summing values for common keys.",
+    "c_true": "def merge_dicts(d1, d2):\n    res = d1.copy()\n    for k, v in d2.items():\n        res[k] = res.get(k, 0) + v\n    return res",
+    "c_false": "def merge_dicts(d1, d2):\n    res = d1.copy()\n    for k, v in d2.items():\n        res[k] = res.get(k, 0) - v # Logic mutation: Subtracts instead of adding\n    return res"
+  },
+  {
+    "id": "triplet_015",
+    "prompt": "Generate a Fibonacci sequence of n elements.",
+    "c_true": "def fibonacci(n):\n    if n <= 0: return []\n    elif n == 1: return [0]\n    seq = [0, 1]\n    while len(seq) < n:\n        seq.append(seq[-1] + seq[-2])\n    return seq",
+    "c_false": "def fibonacci(n):\n    if n <= 0: return []\n    elif n == 1: return [0]\n    seq = [0, 1]\n    while len(seq) > n: # Loop condition mutation\n        seq.append(seq[-1] + seq[-2])\n    return seq"
+  },
+  {
+    "id": "triplet_016",
+    "prompt": "Capitalize the first letter of each word in a string.",
+    "c_true": "def title_case(s):\n    return ' '.join(word.capitalize() for word in s.split())",
+    "c_false": "def title_case(s):\n    return ' '.join(word.capitalize() for word in s.split())\n    return s # Unreachable code"
+  },
+  {
+    "id": "triplet_017",
+    "prompt": "Count the frequency of elements in a list.",
+    "c_true": "def count_freq(lst):\n    freq = {}\n    for item in lst:\n        freq[item] = freq.get(item, 0) + 1\n    return freq",
+    "c_false": "def count_freq(lst):\n    freq = {}\n    for item in lst:\n        freq[item] = 1 # Logic mutation: Hardcodes 1 instead of incrementing\n    return freq"
+  },
+  {
+    "id": "triplet_018",
+    "prompt": "Calculate BMI given weight (kg) and height (m).",
+    "c_true": "def calculate_bmi(weight, height):\n    if height <= 0: return 0\n    return weight / (height ** 2)",
+    "c_false": "def calculate_bmi(weight, height):\n    if height <= 0: return 0\n    return weight * (height ** 2) # Math mutation: Multiplies instead of dividing"
+  },
+  {
+    "id": "triplet_019",
+    "prompt": "Find the intersection of two lists.",
+    "c_true": "def find_intersection(lst1, lst2):\n    return list(set(lst1) & set(lst2))",
+    "c_false": "def find_intersection(lst1, lst2):\n    return list(set(lst1) | set(lst2)) # Mutation: Finds union instead of intersection"
+  },
+  {
+    "id": "triplet_020",
+    "prompt": "Convert temperature from Celsius to Fahrenheit.",
+    "c_true": "def c_to_f(c):\n    return (c * 9/5) + 32",
+    "c_false": "def c_to_f(c):\n    return (c * 9/5) - 32 # Math mutation: Subtracts 32 instead of adding"
+  }
+]
