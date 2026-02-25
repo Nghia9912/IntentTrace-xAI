@@ -63,7 +63,7 @@ The system was evaluated against a Ground Truth dataset of 20 triplets (Prompt, 
 - [x] **Sprint 2:** Semantic Space Integration (sentence-transformers).
 - [x] **Sprint 3:** xAI Engine & Gradient Mathematics (Captum & CodeBERT).
 - [x] **Sprint 4:** Metric Aggregation, AUC-ROC Benchmark, and CLI Deployment.
-- [ ] **Sprint 5:** CI/CD Integration and Automated Code Coverage Reports.
+- [x] **Sprint 5:** CI/CD Integration and Automated Code Coverage Reports.
 
 ## References
 
