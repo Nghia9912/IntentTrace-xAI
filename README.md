@@ -4,20 +4,32 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6.0+-ee4c2c.svg)](https://pytorch.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**IntentTrace-xAI** is an open-source evaluation framework designed to mathematically verify whether LLM-generated code aligns with the user's initial natural language intent. It mitigates hallucination risks by combining deterministic static analysis with deep neural attribution.
+**IntentTrace-xAI** is a neuro-symbolic evaluation framework designed to mathematically verify whether LLM-generated code aligns with the user's natural language intent. By integrating deterministic static analysis with deep neural attribution, it provides a transparent and explainable metric for code integrity.
+
+## Motivation
+
+As LLMs become central to software development, the risk of "Code Hallucinations"—where generated code appears syntactically correct but diverges from the intended logic—grows significantly. IntentTrace-xAI addresses this by offering an automated, explainable auditing layer that bridges the gap between natural language requirements and source code execution.
 
 ## System Architecture
 
-The framework operates on a multi-pipeline architecture, transitioning from low-cost, high-reliability deterministic checks to deep neural analysis:
+The framework operates on a multi-pipeline architecture, transitioning from low-cost deterministic checks to deep neural analysis:
 
-1. **Static Analysis Pipeline (Base Layer):** Utilizes Python's native ast module to construct a Control Flow Graph (CFG). It runs a Breadth-First Search (BFS) to detect unreachable/dead code, a primary indicator of LLM hallucinations. Operates with O(V+E) complexity.
-2. **Semantic Similarity Pipeline:** Maps both the natural language intent and the generated code's documentation into a shared high-dimensional vector space using sentence-transformers (all-MiniLM-L6-v2) to compute Cosine Similarity.
-3. **Zero-Shot xAI Attribution Pipeline:** The core engine. It utilizes microsoft/codebert-base and PyTorch's Captum library. By applying **Integrated Gradients (IG)** on the Cosine Similarity objective function, it computes an attribution matrix, mapping control flow execution branches back to specific tokens in the original prompt.
-4. **Aggregation Hub:** Normalizes the tensor outputs and outputs a final confidence metric.
+1.  **Static Analysis Pipeline:** Uses Python's `ast` module to construct a Control Flow Graph (CFG) and detect unreachable code with $\mathcal{O}(V+E)$ complexity.
+2.  **Semantic Similarity Pipeline:** Maps intent and code docstrings into a high-dimensional vector space using `all-MiniLM-L6-v2` for Cosine Similarity ($S_{cos}$) calculation.
+3.  **Zero-Shot xAI Attribution Pipeline:** The core engine utilizing `microsoft/codebert-base` and PyTorch `Captum`. It applies **Integrated Gradients (IG)** to compute an attribution matrix $\Phi_{IG}$, mapping logic branches back to specific tokens in the original prompt.
+4.  **Aggregation Hub:** Normalizes tensor outputs and produces the final confidence metric $D_{intent\_final}$.
+
+## Experimental Results (v0.1.0)
+
+The system was evaluated against a Ground Truth dataset of 20 triplets (Prompt, $C_{true}$, $C_{false}$). The following AUC-ROC scores demonstrate the framework's discriminative power at various $\alpha$ (aggregation weights) levels:
+
+| Alpha ($\alpha$) | AUC-ROC Score | Status |
+| :--- | :--- | :--- |
+| 0.3 | **0.9550** | PASSED |
+| 0.5 | **0.8825** | PASSED |
+| 0.7 | **0.7875** | PASSED |
 
 ## Installation
-
-Ensure you have a modern Python environment (>=3.9). Clone the repository and install the pinned dependencies:
 
     git clone https://github.com/Nghia9912/IntentTrace-xAI.git
     cd IntentTrace-xAI
@@ -30,34 +42,31 @@ Ensure you have a modern Python environment (>=3.9). Clone the repository and in
 
     pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
 
-## Quick Start (Static Analysis)
+## Quick Start
 
-The current release (v0.1.0) includes the fully functional Static Analysis module.
+    from core.evaluator import IntentEvaluator
 
-    from core.static_analyzer import DeadCodeDetector
-
-    # LLM generated code with hallucinated dead code
+    evaluator = IntentEvaluator()
+    prompt = "Write a function to calculate the factorial of a positive integer n."
     code = """
-    def process(x):
-        return x * 2
-        print("LLM Hallucination") # Unreachable
+    def factorial(n):
+        if n <= 1: return 1
+        return n * factorial(n - 1)
     """
 
-    detector = DeadCodeDetector(code)
-    dead_nodes = detector.analyze()
-
-    for node in dead_nodes:
-        print(f"Dead code detected at line: {node['line']}, type: {node['type']}")
+    result = evaluator.evaluate(prompt, code, alpha=0.3)
+    print(f"Confidence Score: {result['d_intent_final']:.4f}")
 
 ## Roadmap
 
 - [x] **Sprint 1:** Deterministic Static Analysis & Triplet Ground Truth Dataset.
-- [ ] **Sprint 2:** Semantic Space Integration (sentence-transformers).
-- [ ] **Sprint 3:** xAI Engine & Gradient Mathematics (Captum & CodeBERT).
-- [ ] **Sprint 4:** Metric Aggregation, CI/CD Integration, and CLI Deployment.
+- [x] **Sprint 2:** Semantic Space Integration (sentence-transformers).
+- [x] **Sprint 3:** xAI Engine & Gradient Mathematics (Captum & CodeBERT).
+- [x] **Sprint 4:** Metric Aggregation, AUC-ROC Benchmark, and CLI Deployment.
+- [ ] **Sprint 5:** CI/CD Integration and Automated Code Coverage Reports.
 
 ## References
 
-1. Feng et al. (2020). CodeBERT: A Pre-Trained Model for Programming and Natural Languages.
-2. Kokhlikyan et al. (2020). Captum: A unified and generic model interpretability library for PyTorch.
-3. Sundararajan et al. (2017). Axiomatic Attribution for Deep Networks.
+1. Feng et al. (2020). *CodeBERT: A Pre-Trained Model for Programming and Natural Languages*.
+2. Kokhlikyan et al. (2020). *Captum: A unified and generic model interpretability library for PyTorch*.
+3. Sundararajan et al. (2017). *Axiomatic Attribution for Deep Networks*.
