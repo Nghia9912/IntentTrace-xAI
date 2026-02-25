@@ -19,6 +19,15 @@ The framework operates on a multi-pipeline architecture, transitioning from low-
 3.  **Zero-Shot xAI Attribution Pipeline:** The core engine utilizing `microsoft/codebert-base` and PyTorch `Captum`. It applies **Integrated Gradients (IG)** to compute an attribution matrix $\Phi_{IG}$, mapping logic branches back to specific tokens in the original prompt.
 4.  **Aggregation Hub:** Normalizes tensor outputs and produces the final confidence metric $D_{intent\_final}$.
 
+## Detailed Multi-pipeline Architecture
+
+IntentTrace-xAI employs a **Neuro-Symbolic** approach, stacking layers for maximum reliability:
+
+* **Layer 1: Static Analysis (Symbolic Filter):** Builds a CFG using the `ast` module to detect dead code. Hallucinations trigger a severe 0.1x penalty.
+* **Layer 2: Semantic Similarity (Global Context):** Uses `all-MiniLM-L6-v2` to compute $S_{cos}$ between intent and code structure.
+* **Layer 3: xAI Engine (Neural Attribution):** Leverages `CodeBERT` and `Integrated Gradients` to map execution branches back to specific prompt tokens.
+* **Layer 4: Aggregation Hub:** Fuses all signals into $D_{intent\_final} = \alpha \cdot \hat{\Phi}_{IG} + (1-\alpha) \cdot S_{cos}$.
+
 ## Experimental Results (v0.1.0)
 
 The system was evaluated against a Ground Truth dataset of 20 triplets (Prompt, $C_{true}$, $C_{false}$). The following AUC-ROC scores demonstrate the framework's discriminative power at various $\alpha$ (aggregation weights) levels:
